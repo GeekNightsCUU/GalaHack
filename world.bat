@@ -1,1 +1,0 @@
-c:\Python33\python.exe world.py
