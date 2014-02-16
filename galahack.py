@@ -235,7 +235,7 @@ def createSampleSpaces():
     spaces.append(current_space)
 
     current_space = Space()
-    current_space._id = 10
+    current_space._id = 11
     current_space.color = SpaceColors.GRAY
     current_space.pos = randomPos(390, 90, 15)
     current_space.size = SpaceSizes.SMALL
