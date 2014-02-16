@@ -355,7 +355,7 @@ def renderMainLoop():
     drawTurnTimer()
 
 def renderGameOver():
-    renderWorld()
+    renderMainLoop()
 
     # Welcome text
     welcome_text = welcome_font.render("Game Over", True, Colors.WHITE)
