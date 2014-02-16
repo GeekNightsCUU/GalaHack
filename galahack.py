@@ -320,7 +320,9 @@ def drawMovement(movement):
 
 def drawTurnTimer():
     # The -1 and +1 are small visual hacks, because the square was jumping !
-    fill_amount = (current_turn_timer / MAX_TURN_TIME) * (TURN_TIMER_SIZE - 1) + 1
+    # Remember to cast the turn timer to float for compatibility with Python 2.7
+    fill_amount = (float(current_turn_timer) / MAX_TURN_TIME) * (TURN_TIMER_SIZE - 1) + 1
+
     # Filling square
     pygame.draw.rect(screen, players[current_turn].color[1], ((740, 32), (TURN_TIMER_SIZE, fill_amount)), 0)
     # Border
