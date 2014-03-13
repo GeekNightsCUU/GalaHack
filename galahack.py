@@ -189,17 +189,17 @@ def createSampleSpaces():
 
     current_space = Space()
     current_space._id = 5
-    current_space.color = SpaceColors.GRAY
+    current_space.color = SpaceColors.RED
     current_space.pos = randomPos(550, 150, 15)
-    current_space.size = SpaceSizes.LARGE
+    current_space.size = SpaceSizes.XLARGE
     current_space.units = random.randint(70, 80)
     spaces.append(current_space)
 
     current_space = Space()
     current_space._id = 6
-    current_space.color = SpaceColors.GRAY
+    current_space.color = SpaceColors.YELLOW
     current_space.pos = randomPos(150, 450, 15)
-    current_space.size = SpaceSizes.LARGE
+    current_space.size = SpaceSizes.XLARGE
     current_space.units = random.randint(70, 80)
     spaces.append(current_space)
 
@@ -413,6 +413,14 @@ def initGame():
     current_player.color = SpaceColors.GREEN
     players.append(current_player)
 
+    current_player = Player()
+    current_player.color = SpaceColors.RED
+    players.append(current_player)
+
+    current_player = Player()
+    current_player.color = SpaceColors.YELLOW
+    players.append(current_player)
+
     """
     DEBUG: Add more players
 
@@ -477,6 +485,8 @@ def increaseTick():
 
 def checkGameOver():
     "Check if the players have at least one space to keep playing"
+    number_of_players = 0
+    players_to_remove = []
     # Clear the spaces number for each player
     for player in players:
         player.spaces_num = 0
@@ -488,10 +498,18 @@ def checkGameOver():
                 player.spaces_num += 1
 
     for player in players:
-        if player.spaces_num == 0:
-            return player.color
+        if player.spaces_num >= 1:
+            number_of_players+=1
+        else:
+            players_to_remove.append(player)
+            print(player.color)
+    if len(players_to_remove) < 0:
+    	for to_delete_player in players_to_remove:
+    		players.remove(to_delete_player)
+    	print(players_to_remove)
 
-    return None
+
+    return number_of_players
 
 def createMovement(space_origin_id, space_destination_id, percent):
     global movements
@@ -593,10 +611,10 @@ def main():
 
             renderMainLoop()
             increaseTick()
-            if checkGameOver() != None:
+            if checkGameOver() <= 1:
                 current_scene = Scenes.GAME_OVER
         elif current_scene == Scenes.GAME_OVER:
-            renderGameOver()
+             renderGameOver()
 
         pygame.display.flip() # Update (draw) the screen
     pygame.quit() #IDLE friendly
