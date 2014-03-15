@@ -126,6 +126,7 @@ movement_font = pygame.font.Font(main_font, 14)
 mouse_pos = [0, 0]
 current_selection = []
 current_turn = None
+out = []
 current_turn_timer = 0
 current_tick = 0
 
@@ -192,7 +193,7 @@ def createSampleSpaces():
     current_space.color = SpaceColors.RED
     current_space.pos = randomPos(550, 150, 15)
     current_space.size = SpaceSizes.XLARGE
-    current_space.units = random.randint(70, 80)
+    current_space.units = 150
     spaces.append(current_space)
 
     current_space = Space()
@@ -200,7 +201,7 @@ def createSampleSpaces():
     current_space.color = SpaceColors.YELLOW
     current_space.pos = randomPos(150, 450, 15)
     current_space.size = SpaceSizes.XLARGE
-    current_space.units = random.randint(70, 80)
+    current_space.units = 150
     spaces.append(current_space)
 
     current_space = Space()
@@ -440,14 +441,15 @@ def nextTurn():
     current_turn += 1
     if current_turn > (len(players) - 1):
         current_turn = 0
-
+    log(current_turn)
+    log(out)
     # Restart the turn timer and remove selections of last player
     current_turn_timer = 0
     current_selection = []
 
 def increaseTick():
     "Create new units, manage movement position, apply action when reached the destination"
-    global spaces, current_turn_timer, current_tick
+    global spaces, current_turn_timer, current_tick,current_turn
     for space in spaces:
         if space.size == SpaceSizes.SMALL:
             space.units += SpaceRecruiting.SMALL
@@ -459,7 +461,7 @@ def increaseTick():
             space.units += SpaceRecruiting.XLARGE
 
     movements_to_remove = []
-
+    
     for current_movement_id in range(len(movements)):
         movements[current_movement_id].progress[0] += UNITS_SPEED
         movements[current_movement_id].current_pos[0] += \
@@ -476,9 +478,10 @@ def increaseTick():
 
     for current_movement_id in reversed(movements_to_remove):
         del(movements[current_movement_id])
+    
 
     current_turn_timer += 1 # Increase turn tick timer
-    if current_turn_timer > MAX_TURN_TIME:
+    if current_turn_timer > MAX_TURN_TIME or current_turn in out:
         nextTurn()
 
     current_tick += 1
@@ -486,7 +489,8 @@ def increaseTick():
 def checkGameOver():
     "Check if the players have at least one space to keep playing"
     number_of_players = 0
-    players_to_remove = []
+    global out
+    aux = 0
     # Clear the spaces number for each player
     for player in players:
         player.spaces_num = 0
@@ -498,17 +502,13 @@ def checkGameOver():
                 player.spaces_num += 1
 
     for player in players:
-        if player.spaces_num >= 1:
-            number_of_players+=1
+        if player.spaces_num >= 1:            
+            number_of_players+=1            
         else:
-            players_to_remove.append(player)
-            print(player.color)
-    if len(players_to_remove) < 0:
-    	for to_delete_player in players_to_remove:
-    		players.remove(to_delete_player)
-    	print(players_to_remove)
-
-
+            if aux not in out:
+                out.append(aux)
+        aux+=1
+          
     return number_of_players
 
 def createMovement(space_origin_id, space_destination_id, percent):
@@ -612,6 +612,8 @@ def main():
             renderMainLoop()
             increaseTick()
             if checkGameOver() <= 1:
+                print(len(players))
+
                 current_scene = Scenes.GAME_OVER
         elif current_scene == Scenes.GAME_OVER:
              renderGameOver()
