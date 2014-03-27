@@ -3,11 +3,10 @@
 __author__      = "Emmanuel Parada Licea (@eaplmx)"
 __license__     = "The MIT License (MIT)"
 __copyright__   = "Copyright (C) 2014"
-__version__     = "0.0.2"
+__version__     = "0.0.4"
 
 # TO DO:
 # - Change all strings to a translatable dictionary
-# - Allow checkGameOver to work with 4 players. Currently only works for 2.
 # - Bug when conquering a space (Appears negative units !)
 
 import pygame
@@ -105,7 +104,7 @@ screen = pygame.display.set_mode(screen_size)
 icon = pygame.Surface((1,1))
 icon.set_alpha(0)
 pygame.display.set_icon(icon)
-pygame.display.set_caption("GalaHack v0.0.1") # To do: Change to global strings translation
+pygame.display.set_caption("GalaHack v0.0.4") # To do: Change to global strings translation
 
 # TO DO: Center the screen
 
@@ -139,6 +138,9 @@ background_rect = background.get_rect()
 
 background_welcome = pygame.image.load(ART_DIR + 'back_welcome.jpg')
 background_welcome_rect = background_welcome.get_rect()
+sprite_castle_xlarge = pygame.sprite.Sprite()
+sprite_castle_xlarge.image = pygame.image.load(ART_DIR + 'castle.jpg')
+sprite_castle_xlarge.rect = sprite_castle_xlarge.image.get_rect()
 
 def randomPos(x, y, margin):
     "Create fuzzy random positions from a point and a range"
@@ -293,40 +295,36 @@ def drawSpace(space):
         color_to_render = space.color[1]
     else:
         color_to_render = space.color[0]
+
+    #pygame.draw.rect(screen, Colors.BLACK, (space.pos, space.size), 0)
+    pygame.draw.rect(screen, color_to_render, (space.pos, space.size), 2)
+
     if space.size == SpaceSizes.XLARGE:
-        b = pygame.sprite.Sprite()
-        b.image = pygame.image.load(ART_DIR + 'castle.jpg')
-        b.rect = b.image.get_rect()
-        b.rect.topleft = space.pos
-        screen.blit(b.image, b.rect)
-        pygame.display.update()
+        sprite_castle_xlarge.rect.topleft = space.pos
+        screen.blit(sprite_castle_xlarge.image, sprite_castle_xlarge.rect)
     elif space.size == SpaceSizes.LARGE:
         b = pygame.sprite.Sprite()
         b.image = pygame.image.load(ART_DIR + 'castle_large.jpg')
         b.rect = b.image.get_rect()
         b.rect.topleft = space.pos
         screen.blit(b.image, b.rect)
-        pygame.display.update()
     elif space.size == SpaceSizes.MEDIUM:
         b = pygame.sprite.Sprite()
         b.image = pygame.image.load(ART_DIR + 'castle_medium.jpg')
         b.rect = b.image.get_rect()
         b.rect.topleft = space.pos
         screen.blit(b.image, b.rect)
-        pygame.display.update()
     elif space.size == SpaceSizes.SMALL:
         b = pygame.sprite.Sprite()
         b.image = pygame.image.load(ART_DIR + 'castle_small.jpg')
         b.rect = b.image.get_rect()
         b.rect.topleft = space.pos
         screen.blit(b.image, b.rect)
-        pygame.display.update()
-    #pygame.draw.rect(screen, Colors.BLACK, (space.pos, space.size), 0)
-    #pygame.draw.rect(screen, color_to_render, (space.pos, space.size), 2)
+    
 
     # Draw the text
     units = str(int(math.floor(space.units)))
-    units_text = units_font.render(units, True, Colors.WHITE)
+    units_text = units_font.render(units, True, color_to_render)
     text_pos = units_text.get_rect()
 
     # Center to the space
@@ -445,7 +443,9 @@ def initGame():
     current_player.color = SpaceColors.RED
     players.append(current_player)
 
-    
+    current_player = Player()
+    current_player.color = SpaceColors.YELLOW
+    players.append(current_player)
 
     """
     DEBUG: Add more players
@@ -644,6 +644,8 @@ def main():
              renderGameOver()
 
         pygame.display.flip() # Update (draw) the screen
+        pygame.display.set_caption("GalaHack v0.0.4 " + str(round(clock.get_fps(), 0)) + " FPS")
+
     pygame.quit() #IDLE friendly
 
 main()
