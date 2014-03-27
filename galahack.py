@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding:utf-8
-__author__      = "Emmanuel Parada Licea (@eaplmx)"
+__author__      = "El-aro, Emmanuel Parada Licea (@eaplmx)"
 __license__     = "The MIT License (MIT)"
 __copyright__   = "Copyright (C) 2014"
-__version__     = "0.0.2"
+__version__     = "0.0.3"
 
 # TO DO:
 # - Change all strings to a translatable dictionary
@@ -105,7 +105,7 @@ screen = pygame.display.set_mode(screen_size)
 icon = pygame.Surface((1,1))
 icon.set_alpha(0)
 pygame.display.set_icon(icon)
-pygame.display.set_caption("GalaHack v0.0.1") # To do: Change to global strings translation
+pygame.display.set_caption("GalaHack v0.0.3") # To do: Change to global strings translation
 
 # TO DO: Center the screen
 
@@ -118,15 +118,15 @@ ART_DIR = "art" + os.sep
 TURN_TIMER_SIZE = 30
 
 # Game variables
-main_font = ART_DIR + "exo.ttf"
-welcome_font = pygame.font.Font(main_font, 50)
-units_font = pygame.font.Font(main_font, 20)
-movement_font = pygame.font.Font(main_font, 14)
+main_font_path = ART_DIR + "exo.ttf"
+welcome_font = pygame.font.Font(main_font_path, 50) # Font path, and size
+units_font = pygame.font.Font(main_font_path, 20)
+movement_font = pygame.font.Font(main_font_path, 14)
 
-mouse_pos = [0, 0]
-current_selection = []
-current_turn = None
-out = []
+mouse_pos = [0, 0] # Current mouse position in screen (pixels)
+current_selection = [] # Current unit selected
+current_turn = None # Which player has the current turn
+out = [] # ???
 current_turn_timer = 0
 current_tick = 0
 
@@ -422,18 +422,6 @@ def initGame():
     current_player.color = SpaceColors.YELLOW
     players.append(current_player)
 
-    """
-    DEBUG: Add more players
-
-    current_player = Player()
-    current_player.color = SpaceColors.RED
-    players.append(current_player)
-
-    current_player = Player()
-    current_player.color = SpaceColors.YELLOW
-    players.append(current_player)
-    """
-
 def nextTurn():
     global current_turn, current_turn_timer, current_selection
 
@@ -441,8 +429,10 @@ def nextTurn():
     current_turn += 1
     if current_turn > (len(players) - 1):
         current_turn = 0
+
     log(current_turn)
     log(out)
+
     # Restart the turn timer and remove selections of last player
     current_turn_timer = 0
     current_selection = []
@@ -450,6 +440,7 @@ def nextTurn():
 def increaseTick():
     "Create new units, manage movement position, apply action when reached the destination"
     global spaces, current_turn_timer, current_tick,current_turn
+
     for space in spaces:
         if space.size == SpaceSizes.SMALL:
             space.units += SpaceRecruiting.SMALL
@@ -479,8 +470,9 @@ def increaseTick():
     for current_movement_id in reversed(movements_to_remove):
         del(movements[current_movement_id])
     
-
     current_turn_timer += 1 # Increase turn tick timer
+
+    # Check if we have reached the max time, or this player is out by not having units
     if current_turn_timer > MAX_TURN_TIME or current_turn in out:
         nextTurn()
 
@@ -488,9 +480,12 @@ def increaseTick():
 
 def checkGameOver():
     "Check if the players have at least one space to keep playing"
-    number_of_players = 0
+    "Returns the number of players with units"
+
     global out
+    number_of_players = 0
     aux = 0
+
     # Clear the spaces number for each player
     for player in players:
         player.spaces_num = 0
@@ -503,11 +498,11 @@ def checkGameOver():
 
     for player in players:
         if player.spaces_num >= 1:            
-            number_of_players+=1            
+            number_of_players += 1
         else:
             if aux not in out:
                 out.append(aux)
-        aux+=1
+        aux += 1
           
     return number_of_players
 
@@ -612,13 +607,13 @@ def main():
             renderMainLoop()
             increaseTick()
             if checkGameOver() <= 1:
-                print(len(players))
+                log(len(players))
 
                 current_scene = Scenes.GAME_OVER
         elif current_scene == Scenes.GAME_OVER:
              renderGameOver()
 
         pygame.display.flip() # Update (draw) the screen
-    pygame.quit() #IDLE friendly
+    pygame.quit() # IDLE friendly
 
 main()
