@@ -293,9 +293,36 @@ def drawSpace(space):
         color_to_render = space.color[1]
     else:
         color_to_render = space.color[0]
-
-    pygame.draw.rect(screen, Colors.BLACK, (space.pos, space.size), 0)
-    pygame.draw.rect(screen, color_to_render, (space.pos, space.size), 2)
+    if space.size == SpaceSizes.XLARGE:
+        b = pygame.sprite.Sprite()
+        b.image = pygame.image.load(ART_DIR + 'castle.jpg')
+        b.rect = b.image.get_rect()
+        b.rect.topleft = space.pos
+        screen.blit(b.image, b.rect)
+        pygame.display.update()
+    elif space.size == SpaceSizes.LARGE:
+        b = pygame.sprite.Sprite()
+        b.image = pygame.image.load(ART_DIR + 'castle_large.jpg')
+        b.rect = b.image.get_rect()
+        b.rect.topleft = space.pos
+        screen.blit(b.image, b.rect)
+        pygame.display.update()
+    elif space.size == SpaceSizes.MEDIUM:
+        b = pygame.sprite.Sprite()
+        b.image = pygame.image.load(ART_DIR + 'castle_medium.jpg')
+        b.rect = b.image.get_rect()
+        b.rect.topleft = space.pos
+        screen.blit(b.image, b.rect)
+        pygame.display.update()
+    elif space.size == SpaceSizes.SMALL:
+        b = pygame.sprite.Sprite()
+        b.image = pygame.image.load(ART_DIR + 'castle_small.jpg')
+        b.rect = b.image.get_rect()
+        b.rect.topleft = space.pos
+        screen.blit(b.image, b.rect)
+        pygame.display.update()
+    #pygame.draw.rect(screen, Colors.BLACK, (space.pos, space.size), 0)
+    #pygame.draw.rect(screen, color_to_render, (space.pos, space.size), 2)
 
     # Draw the text
     units = str(int(math.floor(space.units)))
@@ -303,7 +330,7 @@ def drawSpace(space):
     text_pos = units_text.get_rect()
 
     # Center to the space
-    text_pos.center = pygame.Rect(space.pos, space.size).center
+    text_pos.topleft = pygame.Rect(space.pos, space.size).topleft
     screen.blit(units_text, text_pos)
 
 def drawMovement(movement):
@@ -418,9 +445,7 @@ def initGame():
     current_player.color = SpaceColors.RED
     players.append(current_player)
 
-    current_player = Player()
-    current_player.color = SpaceColors.YELLOW
-    players.append(current_player)
+    
 
     """
     DEBUG: Add more players
