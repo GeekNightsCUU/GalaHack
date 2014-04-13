@@ -80,6 +80,15 @@ class Movement:
     current_pos = [0, 0]        # Index 0 = X, Index 1 = Y
     player_color = None         # Instance of SpaceColors
     units = 0
+    frame = 0
+    image = pygame.sprite.Sprite()
+    def swapFrame(self):
+        self.frame= self.frame+1
+        print(self.frame)
+        if(self.frame >= 16):
+            self.frame = 0
+            print(self.frame)
+        
 
 class Player:
     "Object to represent every player color and current spaces conquered"
@@ -110,7 +119,7 @@ pygame.display.set_caption("GalaHack v0.0.4") # To do: Change to global strings 
 
 # Game constants
 FPS = 30 # Frames per second
-UNITS_SPEED = 10 # Px per tick
+UNITS_SPEED = 1 # Px per tick
 MOVEMENT_SIZE = (30, 30) # Movement graphic size
 MAX_TURN_TIME = 10 * FPS # Ticks (5 secs * 30 = 150)
 ART_DIR = "art" + os.sep
@@ -152,7 +161,7 @@ def randomPos(x, y, margin):
 def createSampleSpaces():
     current_space = Space()
     current_space._id = 0
-    current_space.color = SpaceColors.BLUE
+    current_space.color = SpaceColors.GREEN
     current_space.pos = randomPos(50, 50, 15)
     current_space.size = SpaceSizes.XLARGE
     current_space.units = 150
@@ -160,7 +169,7 @@ def createSampleSpaces():
 
     current_space = Space()
     current_space._id = 1
-    current_space.color = SpaceColors.GREEN
+    current_space.color = SpaceColors.GRAY
     current_space.pos = randomPos(650, 450, 15)
     current_space.size = SpaceSizes.XLARGE
     current_space.units = 150
@@ -200,7 +209,7 @@ def createSampleSpaces():
 
     current_space = Space()
     current_space._id = 6
-    current_space.color = SpaceColors.YELLOW
+    current_space.color = SpaceColors.GRAY
     current_space.pos = randomPos(150, 450, 15)
     current_space.size = SpaceSizes.XLARGE
     current_space.units = 150
@@ -332,16 +341,39 @@ def drawSpace(space):
     screen.blit(units_text, text_pos)
 
 def drawMovement(movement):
-    pygame.draw.rect(screen, Colors.BLACK, (movement.current_pos, MOVEMENT_SIZE), 0)
-    pygame.draw.rect(screen, movement.player_color[0], (movement.current_pos, MOVEMENT_SIZE), 2)
-
+    global spaces
+    #pygame.draw.rect(screen, Colors.BLACK, (movement.current_pos, MOVEMENT_SIZE), 0)
+    #pygame.draw.rect(screen, movement.player_color[0], (movement.current_pos, MOVEMENT_SIZE), 2)
+    movement.swapFrame()
+    if(spaces[movement.space_dest_id-1].pos[0] < movement.current_pos[0] ):
+        direction = 'left'
+    else:
+        direction = 'right'
+    if(movement.player_color == SpaceColors.BLUE):
+        color = 'blue'
+    elif(movement.player_color == SpaceColors.RED):
+        color = 'red'
+    elif(movement.player_color == SpaceColors.YELLOW):
+        color = 'yellow'
+    elif(movement.player_color == SpaceColors.GREEN):
+        color = 'green'
+    else:
+        color = 'red'
+    b = pygame.sprite.Sprite()
+    if(movement.frame<8):
+        b.image =  pygame.image.load(ART_DIR + 'red_turtle_flying_'+direction+'_'+color+'_1.png')
+    else:
+        b.image = pygame.image.load(ART_DIR + 'red_turtle_flying_'+direction+'_'+color+'_2.png')
+    b.rect = b.image.get_rect()
+    b.rect.topleft = movement.current_pos
+    screen.blit(b.image, b.rect)
     # Draw the text
     units = str(int(math.floor(movement.units)))
     units_text = units_font.render(units, True, Colors.WHITE)
     text_pos = units_text.get_rect()
 
     # Center to the space
-    text_pos.center = pygame.Rect(movement.current_pos, MOVEMENT_SIZE).center
+    text_pos.topleft = pygame.Rect(movement.current_pos, MOVEMENT_SIZE).topleft
     screen.blit(units_text, text_pos)
 
 def drawTurnTimer():
@@ -432,26 +464,24 @@ def initGame():
     current_turn = 0
 
     current_player = Player()
-    current_player.color = SpaceColors.BLUE
+    current_player.color = SpaceColors.RED
     players.append(current_player)
 
+    
     current_player = Player()
     current_player.color = SpaceColors.GREEN
     players.append(current_player)
 
-    current_player = Player()
-    current_player.color = SpaceColors.RED
-    players.append(current_player)
-
-    current_player = Player()
-    current_player.color = SpaceColors.YELLOW
-    players.append(current_player)
 
     """
     DEBUG: Add more players
 
     current_player = Player()
     current_player.color = SpaceColors.RED
+    players.append(current_player)
+
+    current_player = Player()
+    current_player.color = SpaceColors.GREEN
     players.append(current_player)
 
     current_player = Player()
